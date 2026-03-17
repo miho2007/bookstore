@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Store Varketili | Digital Catalogue</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-[#fcfcfc] text-[#1a1a1a]">
+
+    <nav class="fixed top-0 w-full bg-white/70 backdrop-blur-xl z-[100] border-b border-zinc-100 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <h1 class="text-xl font-extrabold tracking-tighter uppercase">
+                Book Store <span class="text-zinc-400 font-light italic ml-1">Varketili</span>
+            </h1>
+            
+            <div class="relative w-full md:w-1/3">
+                <input type="text" id="searchInput" placeholder="Search title or author..." class="w-full bg-zinc-100 border-none px-6 py-3 rounded-2xl text-sm outline-none focus:bg-white focus:ring-4 ring-black/5 transition-all">
+            </div>
+
+            <button id="adminBtn" class="text-[10px] font-bold uppercase tracking-[0.2em] px-6 py-3 bg-black text-white rounded-xl hover:bg-zinc-800 transition-all shadow-lg">Admin Control</button>
+        </div>
+    </nav>
+
+    <section id="adminSection" class="hidden pt-36 pb-12 px-6 bg-white border-b border-zinc-100 shadow-sm">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-end mb-10">
+                <h2 class="text-xs font-bold uppercase tracking-[0.4em] text-zinc-400">Inventory Management</h2>
+                <div class="flex gap-3">
+                    <button id="exportJson" class="text-[10px] bg-zinc-100 px-4 py-2 rounded-lg font-bold uppercase hover:bg-zinc-200">Export Backup</button>
+                    <button id="clearData" class="text-[10px] bg-red-50 text-red-500 px-4 py-2 rounded-lg font-bold uppercase hover:bg-red-100">Wipe Store</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input type="text" id="bookTitle" placeholder="Book Title" class="admin-input">
+                <input type="text" id="bookAuthor" placeholder="Author Name" class="admin-input">
+                <input type="number" id="bookPrice" placeholder="Price (₾)" class="admin-input">
+                
+                <div class="admin-input flex flex-col justify-center">
+                    <span class="text-[10px] uppercase text-zinc-400 mb-2 font-bold tracking-widest">Upload Cover Photo</span>
+                    <input type="file" id="bookImgFile" accept="image/*" class="text-xs cursor-pointer">
+                </div>
+
+                <textarea id="bookDesc" placeholder="Description..." class="admin-input md:col-span-2 h-32"></textarea>
+                <button id="saveBookBtn" class="md:col-span-2 bg-black text-white py-5 rounded-2xl font-bold uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-xl">Add to Storefront</button>
+            </div>
+        </div>
+    </section>
+
+    <header class="pt-60 pb-32 px-6 text-center">
+        <h2 class="text-6xl md:text-9xl font-extrabold tracking-tighter leading-none mb-4">Read <br> <span class="italic font-light text-zinc-300">Differently.</span></h2>
+    </header>
+
+    <main id="bookGrid" class="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-24 pb-48">
+        </main>
+
+    <div id="bookModal" class="fixed inset-0 bg-white/90 backdrop-blur-3xl z-[200] hidden flex items-center justify-center p-4">
+        <button id="closeModal" class="absolute top-8 right-8 text-4xl font-extralight hover:rotate-90 transition-transform">&times;</button>
+        <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-16 items-center p-4 md:p-12 overflow-y-auto max-h-[95vh]">
+            <img id="modalImg" src="" alt="" class="w-full rounded-[2.5rem] shadow-2xl">
+            <div class="text-left">
+                <span id="modalAuthor" class="inline-block text-[11px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-8 pb-2 border-b-2 border-zinc-100 w-full"></span>
+                <h2 id="modalTitle" class="text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 leading-none"></h2>
+                <div id="modalPrice" class="text-4xl font-light mb-10 italic text-zinc-800"></div>
+                <p id="modalDesc" class="text-zinc-500 leading-relaxed text-xl font-normal"></p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-zinc-100 py-24 px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-24">
+            <div class="space-y-6">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-300">Location</h3>
+                <p class="text-xl font-bold">Varketili District, 3rd Array<br>Tbilisi, Georgia</p>
+                <a href="tel:+995000000" class="inline-block bg-zinc-100 px-6 py-3 rounded-full text-xs font-bold uppercase hover:bg-black hover:text-white transition">Call Store</a>
+            </div>
+            <div class="space-y-6">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-300">Social</h3>
+                <div class="flex flex-col gap-4 text-2xl font-bold">
+                    <a href="#" class="hover:italic transition-all w-fit">Instagram</a>
+                    <a href="#" class="hover:italic transition-all w-fit">Facebook</a>
+                </div>
+            </div>
+            <div class="md:text-right">
+                <h2 class="text-lg font-bold uppercase">Book Store Varketili</h2>
+                <p class="text-zinc-400 text-sm mt-4 italic">© 2026 Digital Catalogue</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
