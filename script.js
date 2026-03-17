@@ -1,8 +1,8 @@
-const MASTER_PASSWORD = "varketiliadmin";
-
 // 1. DATA SOURCE
 // INITIAL_BOOKS comes from your data.js file
 let books = typeof INITIAL_BOOKS !== 'undefined' ? [...INITIAL_BOOKS] : [];
+// We store the typed password in memory so we can send it with the "Save" request
+let adminSessionPassword = ""; 
 
 document.addEventListener('DOMContentLoaded', () => {
     const adminBtn = document.getElementById('adminBtn');
@@ -53,27 +53,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 3. ADMIN ACCESS CONTROL ---
+    // --- 3. ADMIN ACCESS CONTROL (SECURE VERSION) ---
     if (adminBtn) {
         adminBtn.onclick = () => {
             if (adminSection.classList.contains('hidden')) {
                 const pass = prompt("Admin Key:");
-                if (pass === MASTER_PASSWORD) {
+                if (pass) {
+                    // We don't verify here (since the password isn't in the code anymore)
+                    // We just store it and show the panel. The Server will block the save if it's wrong.
+                    adminSessionPassword = pass; 
                     adminSection.classList.remove('hidden');
                     adminBtn.innerText = "Close Admin";
                     renderBooks();
-                } else if (pass !== null) {
-                    alert("Unauthorized");
                 }
             } else {
                 adminSection.classList.add('hidden');
                 adminBtn.innerText = "Admin Control";
+                adminSessionPassword = ""; // Clear password on close
                 renderBooks();
             }
         };
     }
 
-    // --- 4. THE "SAVE TO GITHUB" FUNCTION ---
+    // --- 4. THE "SAVE TO GITHUB" FUNCTION (SECURE VERSION) ---
     if (saveBookBtn) {
         saveBookBtn.onclick = function() {
             const title = document.getElementById('bookTitle').value;
@@ -88,25 +90,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveBookBtn.disabled = true;
 
                 reader.onload = async function(e) {
-                    // Update local list
                     const updatedList = [{
                         title, author, price, description: desc, image: e.target.result
                     }, ...books];
 
-                    saveBookBtn.innerText = "Updating GitHub Repo...";
+                    saveBookBtn.innerText = "Verifying & Saving...";
 
                     try {
-                        // Call Netlify Function
                         const response = await fetch('/.netlify/functions/save', {
                             method: 'POST',
-                            body: JSON.stringify({ newBooks: updatedList })
+                            body: JSON.stringify({ 
+                                newBooks: updatedList,
+                                adminPass: adminSessionPassword // Sending password to backend
+                            })
                         });
 
+                        const result = await response.json();
+
                         if (response.ok) {
-                            alert("Success! Book saved to GitHub. Site will update in ~30 seconds.");
+                            alert("Success! Book saved to GitHub.");
                             location.reload(); 
                         } else {
-                            throw new Error("Failed to save to GitHub");
+                            // This will trigger if the password in Netlify doesn't match
+                            throw new Error(result.error || "Unauthorized access");
                         }
                     } catch (err) {
                         alert("Error: " + err.message);
@@ -151,12 +157,18 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch('/.netlify/functions/save', {
                     method: 'POST',
-                    body: JSON.stringify({ newBooks: updatedList })
+                    body: JSON.stringify({ 
+                        newBooks: updatedList,
+                        adminPass: adminSessionPassword 
+                    })
                 });
 
                 if (response.ok) {
-                    alert("Deleted! Site is rebuilding.");
+                    alert("Deleted successfully!");
                     location.reload();
+                } else {
+                    const result = await response.json();
+                    alert("Error: " + result.error);
                 }
             } catch (err) {
                 alert("Error deleting: " + err.message);
@@ -164,6 +176,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Initial load
     renderBooks();
 });
