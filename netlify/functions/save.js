@@ -11,8 +11,8 @@ exports.handler = async (event) => {
   try {
     // 1. Get the current file info (we need the 'sha' to overwrite it)
     const { data: fileData } = await octokit.repos.getContent({
-      owner: 'YOUR_GITHUB_USERNAME',
-      repo: 'YOUR_REPO_NAME',
+      owner: 'miho2007',
+      repo: 'bookstore',
       path: 'data.js',
     });
 
@@ -21,8 +21,8 @@ exports.handler = async (event) => {
 
     // 3. Push the update to GitHub
     await octokit.repos.createOrUpdateFileContents({
-      owner: 'YOUR_GITHUB_USERNAME',
-      repo: 'YOUR_REPO_NAME',
+      owner: 'miho2007',
+      repo: 'bookstore',
       path: 'data.js',
       message: 'Admin: Added new book to catalogue',
       content: Buffer.from(updatedContent).toString('base64'),
