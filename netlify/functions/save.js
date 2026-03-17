@@ -6,49 +6,55 @@ exports.handler = async (event) => {
         "Access-Control-Allow-Origin": "*",
     };
 
-    if (event.httpMethod !== "POST") {
-        return { statusCode: 405, headers, body: "Method Not Allowed" };
-    }
-
     try {
-        const token = process.env.GH_TOKEN;
-        if (!token) throw new Error("GH_TOKEN is missing in Netlify Environment Variables");
+        console.log("Function triggered...");
 
-        const octokit = new Octokit({ auth: token });
+        // 1. Check Token
+        if (!process.env.GH_TOKEN) {
+            console.error("LOG: GH_TOKEN is missing!");
+            return { statusCode: 500, headers, body: JSON.stringify({ error: "GH_TOKEN missing" }) };
+        }
+
+        const octokit = new Octokit({ auth: process.env.GH_TOKEN });
         const { newBooks } = JSON.parse(event.body);
 
-        // --- YOUR DATA ---
+        // 2. Exact Repo Info
         const OWNER = 'miho2007'; 
         const REPO = 'bookstore';
-        const FILE_PATH = 'data.js';
 
-        // 1. Get current file data (to get the SHA)
+        console.log(`LOG: Attempting to reach ${OWNER}/${REPO}...`);
+
+        // 3. Get File (The part that usually fails)
         const { data: fileData } = await octokit.repos.getContent({
             owner: OWNER,
             repo: REPO,
-            path: FILE_PATH,
+            path: 'data.js',
         });
 
-        // 2. Prepare the new content
+        console.log("LOG: data.js found. Updating content...");
+
         const fileContent = `const INITIAL_BOOKS = ${JSON.stringify(newBooks, null, 2)};`;
 
-        // 3. Update GitHub
+        // 4. Push Update
         await octokit.repos.createOrUpdateFileContents({
             owner: OWNER,
             repo: REPO,
-            path: FILE_PATH,
-            message: 'Catalogue Update from Website',
+            path: 'data.js',
+            message: 'Catalogue Update',
             content: Buffer.from(fileContent).toString('base64'),
             sha: fileData.sha,
         });
+
+        console.log("LOG: Successfully saved to GitHub!");
 
         return {
             statusCode: 200,
             headers,
             body: JSON.stringify({ status: "success" }),
         };
+
     } catch (err) {
-        console.error("Function Error:", err.message);
+        console.error("LOG ERROR:", err.message);
         return {
             statusCode: 500,
             headers,
